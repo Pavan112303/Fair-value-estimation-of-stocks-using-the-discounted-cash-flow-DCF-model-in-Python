@@ -1,0 +1,10 @@
+Flask
+numpy
+pandas
+matplotlib
+seaborn
+yfinance
+requests
+rapidfuzz
+
+

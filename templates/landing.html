@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCF Stock Valuation Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body class="landing-body">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chart-line me-2"></i>
+                DCF Valuation Tool
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#start-analysis">Start Analysis</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold text-white mb-4">
+                        Professional Stock Valuation
+                    </h1>
+                    <p class="lead text-white mb-4">
+                        Analyze stocks using the Discounted Cash Flow (DCF) model. 
+                        Get fair value estimates and investment recommendations with our advanced financial analysis tool.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#start-analysis" class="btn btn-light btn-lg">
+                            <i class="fas fa-calculator me-2"></i>
+                            Start Analysis
+                        </a>
+                        <a href="#how-it-works" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-play me-2"></i>
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image text-center">
+                        <i class="fas fa-chart-pie fa-10x text-white opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container my-5 section-block reveal-onload" id="features">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-5 fw-bold">Why Choose Our DCF Tool?</h2>
+                <p class="lead">Professional-grade financial analysis made simple</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Real-time Data</h5>
+                        <p class="card-text">Access live stock data and financial statements from Yahoo Finance API.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calculator fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Advanced DCF Model</h5>
+                        <p class="card-text">Complete DCF implementation with WACC calculation and terminal value estimation.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-bar fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Interactive Charts</h5>
+                        <p class="card-text">Visualize cash flow projections, value composition, and sensitivity analysis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="container my-5 section-block reveal-onload" id="how-it-works">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-5 fw-bold">How DCF Valuation Works</h2>
+                <p class="lead">Understanding the Discounted Cash Flow model</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-1 fa-circle text-primary me-2"></i>Project Future Cash Flows</h5>
+                                <p>Estimate the company's free cash flows for the next 5-10 years based on growth assumptions.</p>
+                                
+                                <h5><i class="fas fa-2 fa-circle text-primary me-2"></i>Calculate Terminal Value</h5>
+                                <p>Estimate the company's value beyond the projection period using the Gordon Growth Model.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-3 fa-circle text-primary me-2"></i>Determine WACC</h5>
+                                <p>Calculate the Weighted Average Cost of Capital using risk-free rate, beta, and market risk premium.</p>
+                                
+                                <h5><i class="fas fa-4 fa-circle text-primary me-2"></i>Discount to Present Value</h5>
+                                <p>Apply the discount rate to bring all future cash flows to their present value.</p>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <h5><i class="fas fa-5 fa-circle text-primary me-2"></i>Calculate Fair Value</h5>
+                            <p>Sum of present values gives enterprise value. Subtract net debt and divide by shares to get fair value per share.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Start Analysis Section -->
+    <div class="container my-5 section-block reveal-onload" id="start-analysis">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-5 fw-bold">Ready to Analyze?</h2>
+                <p class="lead">Start your professional stock valuation analysis</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow-lg">
+                    <div class="card-body text-center p-5">
+                        <i class="fas fa-rocket fa-4x text-primary mb-4"></i>
+                        <h4 class="mb-4">Begin Your DCF Analysis</h4>
+                        <p class="mb-4">Enter any stock ticker symbol to get started with our comprehensive valuation analysis.</p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="/analyze" class="btn btn-primary btn-lg">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Start Analysis
+                            </a>
+                            <a href="#about" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="container my-5 section-block reveal-onload" id="about">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            About DCF Valuation
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="lead">The Discounted Cash Flow (DCF) model is a fundamental valuation method used to estimate the intrinsic value of a stock.</p>
+                        
+                        <h5>Key Assumptions:</h5>
+                        <ul>
+                            <li><strong>Growth Rates:</strong> Expected annual growth in free cash flows</li>
+                            <li><strong>WACC:</strong> Weighted Average Cost of Capital (risk-free rate + beta × market risk premium)</li>
+                            <li><strong>Terminal Growth:</strong> Long-term growth rate (typically 2-3%)</li>
+                        </ul>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Disclaimer:</strong> This tool is for educational purposes only. Always consult with a financial advisor before making investment decisions.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>DCF Valuation Tool</h5>
+                    <p>Professional stock valuation using the Discounted Cash Flow model.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2024 DCF Valuation Tool. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

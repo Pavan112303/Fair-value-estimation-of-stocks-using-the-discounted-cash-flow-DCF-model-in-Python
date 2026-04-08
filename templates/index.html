@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCF Stock Valuation Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chart-line me-2"></i>
+                DCF Valuation Tool
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#help">Help</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header bg-light py-3 border-bottom">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-line me-2 text-primary"></i>
+                        DCF Stock Analysis
+                    </h4>
+                    <small class="text-muted">🇺🇸 US & 🇮🇳 Indian stock valuation analysis powered by DCF model</small>
+                </div>
+                <a href="/" class="btn btn-outline-primary">
+                    <i class="fas fa-home me-2"></i>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analysis Form -->
+    <div class="container my-4 section-block reveal-onload" id="analysis-section">
+        <!-- Error messages will be inserted here dynamically -->
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-search me-2"></i>
+                            Stock Analysis Form
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="analysisForm">
+                            <!-- Market Selection -->
+                            <div class="mb-4">
+                                <label for="market" class="form-label">
+                                    <i class="fas fa-globe me-2"></i>Market
+                                </label>
+                                <select class="form-select" id="market">
+                                    <option value="US">🇺🇸 United States (US Stocks)</option>
+                                    <option value="IN">🇮🇳 India (NSE/BSE Stocks)</option>
+                                </select>
+                            </div>
+
+                            <!-- Stock Selection -->
+                            <div class="mb-4">
+                                <label for="ticker" class="form-label">
+                                    <i class="fas fa-search me-2"></i>Stock Ticker Symbol
+                                </label>
+                                <input type="text" class="form-control form-control-lg" id="ticker" placeholder="Enter ticker (e.g., AAPL, MSFT, GOOGL...)" required autofocus>
+                                <div class="form-text" id="tickerHelp">Enter any valid US stock ticker symbol and click Analyze</div>
+                            </div>
+                            
+                            <!-- Popular Stocks Quick Select -->
+                            <div class="mb-4">
+                                <label for="popularStocks" class="form-label">
+                                    <i class="fas fa-star me-2"></i>Or Select from Popular Stocks
+                                </label>
+                                <select class="form-select" id="popularStocks">
+                                    <option value="">Choose a popular stock...</option>
+                                </select>
+                                <div class="form-text" id="popularStocksHelp">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Works with US stocks: Tech (AAPL, MSFT, GOOGL), Auto (TSLA, F), Retail (AMZN, WMT), Finance (JPM, BAC), Healthcare (JNJ, PFE)
+                                </div>
+                            </div>
+
+
+                            <!-- Growth Rates -->
+                            <div class="mb-4">
+                                <label class="form-label">Growth Rates (Annual)</label>
+                                <div class="row" id="growthRatesContainer">
+                                    <div class="col-md-2">
+                                        <label class="form-label small">Year 1</label>
+                                        <input type="number" class="form-control" step="0.01" min="0" max="1" value="0.08">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small">Year 2</label>
+                                        <input type="number" class="form-control" step="0.01" min="0" max="1" value="0.07">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small">Year 3</label>
+                                        <input type="number" class="form-control" step="0.01" min="0" max="1" value="0.06">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small">Year 4</label>
+                                        <input type="number" class="form-control" step="0.01" min="0" max="1" value="0.05">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small">Year 5</label>
+                                        <input type="number" class="form-control" step="0.01" min="0" max="1" value="0.04">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" id="resetGrowthRates">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-text">Enter growth rates as decimals (e.g., 0.08 for 8%)</div>
+                            </div>
+
+                            <!-- Additional Parameters -->
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <label for="taxRate" class="form-label">Tax Rate</label>
+                                    <input type="number" class="form-control" id="taxRate" step="0.01" min="0" max="1" value="0.25">
+                                    <div class="form-text">Corporate tax rate</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="years" class="form-label">Projection Years</label>
+                                    <select class="form-select" id="years">
+                                        <option value="5" selected>5 Years</option>
+                                        <option value="7">7 Years</option>
+                                        <option value="10">10 Years</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="riskFreeRate" class="form-label">Risk-Free Rate</label>
+                                    <input type="number" class="form-control" id="riskFreeRate" step="0.01" min="0" max="1" value="0.04">
+                                    <div class="form-text">10-year Treasury rate</div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <button type="button" class="btn btn-outline-secondary btn-lg" id="clearForm">
+                                    <i class="fas fa-undo me-2"></i>Reset Form
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-lg px-5" id="analyzeBtn">
+                                    <i class="fas fa-calculator me-2"></i>Analyze Stock
+                                </button>
+                            </div>
+                            
+                            <div class="text-center mt-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-lightbulb me-1"></i>
+                                    <strong>Tip:</strong> US stocks use simple tickers (AAPL, MSFT). Indian stocks need .NS suffix (RELIANCE.NS, TCS.NS)
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="text-center" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Analyzing stock data...</p>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultsSection" class="container my-5 section-block reveal-onload" style="display: none;">
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-success text-center">
+                    <h2 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Analysis Results
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="row mb-4" id="keyMetricsCards">
+            <!-- Cards will be populated by JavaScript -->
+        </div>
+
+        <!-- Detailed Results -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Valuation Details
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="valuationDetails"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            Recommendation
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recommendationCard"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Cash Flow Projections
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 300px;">
+                            <canvas id="fcfChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>
+                            Value Composition
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 300px;">
+                            <canvas id="valueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sensitivity Analysis -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-thermometer-half me-2"></i>
+                            Sensitivity Analysis
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-outline-primary mb-3" id="runSensitivity">
+                            <i class="fas fa-play me-2"></i>
+                            Run Sensitivity Analysis
+                        </button>
+                        <div id="sensitivityResults"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium Features Tabs -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <ul class="nav nav-tabs" id="featuresTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="whatif-tab" data-bs-toggle="tab" data-bs-target="#whatif" type="button">
+                            <i class="fas fa-sliders-h me-2"></i>What-If Analysis
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="monte-carlo-tab" data-bs-toggle="tab" data-bs-target="#montecarlo" type="button">
+                            <i class="fas fa-dice me-2"></i>Monte Carlo
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="risk-tab" data-bs-toggle="tab" data-bs-target="#risk" type="button">
+                            <i class="fas fa-chart-bar me-2"></i>Risk Metrics
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ddm-tab" data-bs-toggle="tab" data-bs-target="#ddm" type="button">
+                            <i class="fas fa-percent me-2"></i>Dividend Model
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="peer-tab" data-bs-toggle="tab" data-bs-target="#peers" type="button">
+                            <i class="fas fa-users me-2"></i>Peer Analysis
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button">
+                            <i class="fas fa-history me-2"></i>History
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ai-tab" data-bs-toggle="tab" data-bs-target="#aiinsights" type="button">
+                            <i class="fas fa-brain me-2"></i>AI Insights
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tools-tab" data-bs-toggle="tab" data-bs-target="#tools" type="button">
+                            <i class="fas fa-tools me-2"></i>Tools
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="featuresContent">
+                    <!-- What-If Analysis Tab -->
+                    <div class="tab-pane fade show active" id="whatif" role="tabpanel">
+                        <div class="card shadow mt-3">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-sliders-h me-2"></i>
+                                    Interactive What-If Analysis
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Adjust assumptions in real-time to see how valuation changes</p>
+                                <div class="what-if-analysis">
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <label class="form-label">FCF Multiplier: <strong id="fcfDisplay">100%</strong></label>
+                                            <input type="range" class="form-range what-if-slider" data-param="fcf" min="50" max="150" value="100" />
+                                            <small class="text-muted">Adjust Free Cash Flow</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Growth Rate Multiplier: <strong id="growthDisplay">100%</strong></label>
+                                            <input type="range" class="form-range what-if-slider" data-param="growth" min="50" max="150" value="100" />
+                                            <small class="text-muted">Adjust growth assumptions</small>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <label class="form-label">WACC Adjustment: <strong id="waccDisplay">0 bps</strong></label>
+                                            <input type="range" class="form-range what-if-slider" data-param="wacc" min="-200" max="200" value="0" />
+                                            <small class="text-muted">Adjust in basis points</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Tax Rate: <strong id="taxDisplay">100%</strong></label>
+                                            <input type="range" class="form-range what-if-slider" data-param="tax" min="50" max="150" value="100" />
+                                            <small class="text-muted">Adjust tax assumptions</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <h6>What-If Results:</h6>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="stat-box">
+                                                    <strong>Fair Value</strong>
+                                                    <p class="h5" id="whatIfFairValue">-</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="stat-box">
+                                                    <strong>Upside %</strong>
+                                                    <p class="h5" id="whatIfUpside">-</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="stat-box">
+                                                    <strong>WACC</strong>
+                                                    <p class="h5" id="whatIfWacc">-</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="stat-box">
+                                                    <strong>Recommendation</strong>
+                                                    <p class="h5" id="whatIfRecommendation">-</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monte Carlo Tab -->
+                    <div class="tab-pane fade" id="montecarlo" role="tabpanel">
+                        <div class="card shadow mt-3">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-dice me-2"></i>
+                                    Monte Carlo Simulation
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Run 10,000 simulations to understand valuation uncertainty</p>
+                                <button class="btn btn-warning mb-3" id="runMonteCarloBtn">
+                                    <i class="fas fa-play me-2"></i>Run Simulation
+                                </button>
+                                <div id="monteCarloResults"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Risk Metrics Tab -->
+                    <div class="tab-pane fade" id="risk" role="tabpanel">
+                        <div class="card shadow mt-3">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-chart-bar me-2"></i>
+                                    Risk Metrics & Scoring
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Comprehensive risk analysis across multiple dimensions</p>
+                                <button class="btn btn-danger mb-3" id="runRiskMetricsBtn">
+                                    <i class="fas fa-play me-2"></i>Calculate Risk Score
+                                </button>
+                                <div id="riskMetricsResults"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DDM Tab -->
+                    <div class="tab-pane fade" id="ddm" role="tabpanel">
+                        <div class="card shadow mt-3">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-percent me-2"></i>
+                                    Dividend Discount Model
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Gordon Growth Model for dividend-paying stocks</p>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Current Dividend</label>
+                                        <input type="number" class="form-control" id="ddmCurrentDiv" placeholder="e.g., 2.5" step="0.01" min="0">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Growth Rate (%)</label>
+                                        <input type="number" class="form-control" id="ddmGrowthRate" placeholder="e.g., 5" step="0.01" min="0" max="100">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Required Return (%)</label>
+                                        <input type="number" class="form-control" id="ddmRequiredReturn" placeholder="e.g., 10" step="0.01" min="0" max="100">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">&nbsp;</label>
+                                        <button class="btn btn-success w-100" id="runDDMBtn">
+                                            <i class="fas fa-calculator me-2"></i>Calculate
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="ddmResults"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Peer Analysis Tab -->
+                    <div class="tab-pane fade" id="peers" role="tabpanel">
+                        <div class="card shadow mt-3">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-users me-2"></i>
+                                    Peer Comparison
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Compare with industry peers to assess relative valuation</p>
+                                <button class="btn btn-primary mb-3" id="runPeerComparisonBtn">
+                                    <i class="fas fa-play me-2"></i>Analyze Peers
+                                </button>
+                                <div id="peerComparisonResults"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Valuation History Tab -->
+                    <div class="tab-pane fade" id="history" role="tabpanel">
+                        <div class="card shadow mt-3">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-history me-2"></i>
+                                    Valuation History
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Track valuation changes over time</p>
+                                <button class="btn btn-secondary mb-3" id="loadHistoryBtn">
+                                    <i class="fas fa-history me-2"></i>Load History
+                                </button>
+                                <div id="valuationHistoryResults"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Insights Tab -->
+                    <div class="tab-pane fade" id="aiinsights" role="tabpanel">
+                        <div class="card shadow mt-3">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-brain me-2"></i>
+                                    AI-Powered Investment Insights
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Get AI-generated investment analysis and recommendations</p>
+                                <button class="btn btn-info mb-3" id="getAIInsightsBtn">
+                                    <i class="fas fa-wand-magic-sparkles me-2"></i>Generate AI Insights
+                                </button>
+                                <div id="aiInsightsResults"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tools Tab -->
+                    <div class="tab-pane fade" id="tools" role="tabpanel">
+                        <div class="card shadow mt-3">
+                            <div class="card-header bg-dark text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-tools me-2"></i>
+                                    Tools & Utilities
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h6>Currency Converter</h6>
+                                        <div class="input-group mb-3">
+                                            <input type="number" class="form-control" id="convertAmount" placeholder="Amount" step="0.01" value="1">
+                                            <select class="form-select" id="fromCurrency" style="max-width: 120px;">
+                                                <option value="USD">USD</option>
+                                                <option value="INR">INR</option>
+                                                <option value="EUR">EUR</option>
+                                            </select>
+                                            <button class="btn btn-outline-secondary" id="convertCurrencyBtn">
+                                                <i class="fas fa-exchange-alt me-2"></i>Convert
+                                            </button>
+                                            <select class="form-select" id="toCurrency" style="max-width: 120px;">
+                                                <option value="INR">INR</option>
+                                                <option value="USD">USD</option>
+                                                <option value="EUR">EUR</option>
+                                            </select>
+                                        </div>
+                                        <div id="currencyConversionResult" class="alert alert-info" style="display: none;"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Watchlist Management</h6>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" id="watchlistTicker" placeholder="Enter ticker (e.g., AAPL)">
+                                            <button class="btn btn-outline-success" id="addWatchlistBtn">
+                                                <i class="fas fa-plus me-2"></i>Add
+                                            </button>
+                                            <button class="btn btn-outline-info" id="viewWatchlistBtn">
+                                                <i class="fas fa-list me-2"></i>View
+                                            </button>
+                                        </div>
+                                        <div id="watchlistResult"></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h6>Export Report</h6>
+                                        <button class="btn btn-outline-primary" id="exportPDFBtn">
+                                            <i class="fas fa-file-pdf me-2"></i>Download PDF Report
+                                        </button>
+                                        <small class="text-muted ms-2">Generate professional valuation report</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="container my-5 section-block reveal-onload" id="about">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="mb-3">
+                            <i class="fas fa-info-circle me-2 text-primary"></i>
+                            About DCF Valuation
+                        </h5>
+                        <p>The Discounted Cash Flow (DCF) model estimates a stock's intrinsic value by projecting future cash flows and discounting them to present value using the Weighted Average Cost of Capital (WACC).</p>
+                        
+                        <div class="alert alert-warning mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Disclaimer:</strong> This tool is for educational purposes only. Always consult with a financial advisor before making investment decisions.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>DCF Valuation Tool</h5>
+                    <p>Professional stock valuation using the Discounted Cash Flow model.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2025 DCF Valuation Tool. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
