@@ -1,151 +1,179 @@
-# DCF Stock Valuation Tool
+# DCF Fair Value Estimation Web App
 
-A comprehensive web application for stock valuation using the Discounted Cash Flow (DCF) model. This tool provides professional-grade financial analysis with an intuitive user interface.
+A Flask-based stock valuation application that estimates intrinsic value using the Discounted Cash Flow (DCF) method, with an interactive frontend, optional premium analytics, watchlist support, PDF report export, and currency conversion utilities.
 
-## Features
+## What This Project Solves
 
-- **Real-time Stock Data**: Fetch live stock data using Yahoo Finance API
-- **DCF Model Implementation**: Complete discounted cash flow valuation
-- **Interactive Charts**: Visual representation of cash flows and valuation metrics
-- **Sensitivity Analysis**: Test different scenarios and assumptions
-- **Responsive Design**: Modern, mobile-friendly interface
-- **Professional Reports**: Detailed valuation breakdowns and recommendations
+This project helps you answer one practical question:
+
+"Based on projected cash flows and required return assumptions, is this stock undervalued, fairly valued, or overvalued?"
+
+The app combines financial data retrieval, valuation logic, and clean visual output in one workflow so you can move from ticker input to decision-ready valuation insights quickly.
+
+## Key Features
+
+- DCF fair value estimation from projected free cash flow (FCF)
+- Multi-market ticker handling (US and Indian markets)
+- Fallback logic when direct FCF history is limited
+- Sensitivity analysis to evaluate assumption risk
+- Monte Carlo, peer analysis, and risk metric hooks (premium section)
+- Watchlist management
+- Currency conversion utility with fallback exchange logic
+- PDF report export for valuation summaries
+- Valuation history persistence via SQLite
+
+## Tech Stack
+
+- Backend: Python, Flask
+- Data: yfinance + custom data interface helpers
+- Numerical processing: pandas, numpy
+- Visualization: matplotlib, seaborn, Chart.js
+- Reports: reportlab
+- Frontend: HTML, CSS, JavaScript, Bootstrap
+- Storage: SQLite (`valuation_history.db`)
+
+## Project Structure
+
+```text
+.
+|-- app.py
+|-- config.py
+|-- data_interface.py
+|-- dcf_calculator.py
+|-- requirements.txt
+|-- requirements-minimal.txt
+|-- templates/
+|   |-- index.html
+|   `-- landing.html
+`-- static/
+    |-- css/
+    |   `-- style.css
+    `-- js/
+        `-- app.js
+```
+
+## How the Valuation Flow Works
+
+1. User enters a ticker and valuation assumptions in the UI.
+2. Backend resolves ticker and market context.
+3. App fetches company financials and market metadata.
+4. FCF series is derived; if unavailable, fallback estimation is attempted.
+5. DCF engine computes enterprise value and fair value per share.
+6. App compares fair value with current market price to derive upside/downside.
+7. Recommendation label is assigned (`STRONG BUY`, `BUY`, `HOLD`, `SELL`, `STRONG SELL`).
+8. Result is rendered in dashboard cards, tables, charts, and optional export tools.
+
+## DCF Method (High-Level)
+
+The implementation follows the standard idea:
+
+- Project future FCF for a defined horizon
+- Estimate terminal value after explicit forecast period
+- Discount projected value back to present using required return assumptions
+- Adjust for debt/cash and divide by shares outstanding for per-share fair value
+
+Conceptually:
+
+$$
+	ext{Fair Value per Share} = \frac{\text{PV(Explicit FCF)} + \text{PV(Terminal Value)} - \text{Net Debt}}{\text{Shares Outstanding}}
+$$
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- pip (Python package installer)
+- Python 3.8+
+- pip
 
 ### Setup
 
-1. **Clone or download the project files**
+1. Clone this repository.
+2. Install dependencies:
 
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+pip install -r requirements.txt
+```
 
-3. **Run the application**:
-   ```bash
-   python app.py
-   ```
+3. Run the app:
 
-4. **Open your browser** and navigate to:
-   ```
-   http://localhost:5000
-   ```
+```bash
+python app.py
+```
 
-## Usage
+4. Open:
+
+```text
+http://localhost:5000
+```
+
+## Usage Guide
 
 ### Basic Analysis
 
-1. **Enter Stock Ticker**: Type a valid stock symbol (e.g., AAPL, MSFT, GOOGL)
-2. **Set Growth Rates**: Define annual growth rates for the projection period
-3. **Configure Parameters**: Adjust tax rate, risk-free rate, and other assumptions
-4. **Run Analysis**: Click "Analyze Stock" to get the valuation
+1. Select market (US or IN).
+2. Enter ticker (for Indian symbols, use `.NS` or `.BO` as needed).
+3. Set growth rates, tax rate, projection years, and risk-free rate.
+4. Click Analyze.
+5. Review fair value, current price, upside/downside, and recommendation.
 
-### Advanced Features
+### Tools Tab
 
-- **Popular Stocks**: Quick selection from a curated list of major stocks
-- **Sensitivity Analysis**: Test how changes in assumptions affect valuation
-- **Interactive Charts**: Visualize cash flow projections and value composition
-- **Export Results**: Save analysis results for further review
+- Currency Converter: convert values between supported currencies
+- Watchlist: add/view tickers quickly
+- PDF Export: generate report snapshots
 
-## DCF Model Explanation
+## Main API Endpoints
 
-The Discounted Cash Flow model estimates a stock's intrinsic value by:
+- `GET /` - Landing page
+- `GET /analyze` - Main analysis UI
+- `POST /analyze` - Run stock valuation
+- `POST /convert_currency` - Convert amount from one currency to another
+- `GET /valuation_history/<ticker>` - Retrieve stored valuation history
+- `GET /popular_stocks` - Fetch curated stock list
+- `POST /watchlist` and `GET /watchlist` - Watchlist utilities
+- `GET /export_pdf/<ticker>` - Generate valuation report PDF
 
-1. **Projecting Future Cash Flows**: Estimate free cash flows for 5-10 years
-2. **Calculating Terminal Value**: Estimate value beyond the projection period
-3. **Discounting to Present Value**: Apply WACC to bring future cash flows to present value
-4. **Determining Fair Value**: Sum of present values minus net debt
+## Configuration Notes
 
-### Key Assumptions
+- Flask `secret_key` is currently defined in source; move this to environment variables for production.
+- Currency conversion first attempts market quote lookup and then uses fallback rates when required.
+- SQLite is used for local history; production deployments should migrate to managed storage.
 
-- **Growth Rates**: Expected annual growth in free cash flows
-- **WACC**: Weighted Average Cost of Capital (risk-free rate + beta × market risk premium)
-- **Terminal Growth**: Long-term growth rate (typically 2-3%)
-- **Tax Rate**: Corporate tax rate
+## Limitations
 
-## File Structure
-
-```
-├── app.py                 # Flask web application
-├── dcf_calculator.py      # Core DCF calculation logic
-├── data_interface.py      # Stock data fetching interface
-├── requirements.txt       # Python dependencies
-├── README.md             # This file
-├── templates/
-│   └── index.html        # Main HTML template
-└── static/
-    ├── css/
-    │   └── style.css     # Custom CSS styling
-    └── js/
-        └── app.js        # JavaScript functionality
-```
-
-## API Endpoints
-
-- `GET /` - Main application page
-- `POST /analyze` - Run DCF analysis
-- `POST /sensitivity` - Run sensitivity analysis
-- `GET /stock_info/<ticker>` - Get stock information
-- `GET /popular_stocks` - Get list of popular stocks
-
-## Configuration
-
-### Environment Variables
-
-You can customize the application by modifying these values in `app.py`:
-
-- `app.secret_key`: Flask secret key for sessions
-- `risk_free_rate`: Default risk-free rate (default: 4%)
-- `market_risk_premium`: Market risk premium (default: 6%)
-- `terminal_growth_rate`: Terminal growth rate (default: 2.5%)
-
-### Customization
-
-- **Growth Rate Templates**: Modify default growth rates in the HTML template
-- **Chart Colors**: Customize chart colors in the CSS file
-- **Analysis Parameters**: Adjust default parameters in the JavaScript file
+- Public market data can be delayed or incomplete.
+- Some tickers may not have enough reported fields for robust FCF extraction.
+- DCF output is highly sensitive to growth, discount, and terminal assumptions.
 
 ## Troubleshooting
 
-### Common Issues
+1. Ticker not found:
+   - Verify symbol format and market suffix.
+   - Try known symbols to validate connectivity.
 
-1. **"Could not fetch data for [ticker]"**
-   - Ensure the ticker symbol is valid
-   - Check your internet connection
-   - Some tickers may not be available in the Yahoo Finance database
+2. FCF-related errors:
+   - Some firms have sparse/irregular cash flow statements.
+   - Adjust horizon assumptions and retry.
 
-2. **"No FCF data available"**
-   - The company may not have sufficient financial data
-   - Try a different ticker or time period
+3. Charts not visible:
+   - Check browser console for JavaScript errors.
+   - Hard refresh static assets.
 
-3. **Charts not displaying**
-   - Ensure JavaScript is enabled in your browser
-   - Check browser console for errors
+4. Currency conversion unavailable:
+   - Verify internet access for quote fetch.
+   - Fallback rates should still provide approximate conversion.
 
-### Performance Tips
+## Security and Production Suggestions
 
-- Use shorter projection periods for faster analysis
-- Limit sensitivity analysis to fewer data points
-- Clear browser cache if experiencing issues
+- Move secrets and API-sensitive config to environment variables.
+- Add structured logging and request tracing.
+- Add unit tests for DCF scenarios and edge cases.
+- Introduce CI checks for linting and test coverage.
 
 ## Disclaimer
 
-This tool is for educational and informational purposes only. It should not be considered as financial advice. Always consult with a qualified financial advisor before making investment decisions.
-
-## Contributing
-
-Feel free to submit issues, feature requests, or pull requests to improve the application.
+This project is for educational and analytical use only. It is not investment advice. Always validate assumptions independently and consult a qualified financial advisor for investment decisions.
 
 ## License
 
-This project is open source and available under the MIT License.
-
-## Support
-
-For questions or support, please refer to the documentation or create an issue in the project repository.
+MIT License (or project owner preferred license).
